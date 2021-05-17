@@ -11,6 +11,7 @@ import inspect
 import sys
 import weakref
 from functools import partial
+from django.core.signals import Signal
 
 
 # weakref.WeakMethod backport
