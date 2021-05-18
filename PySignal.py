@@ -11,15 +11,25 @@ import inspect
 import sys
 import weakref
 from functools import partial
-from django.core.signals import Signal
+from pyparsing import basestring
+
+
+def is_lambada(object):
+    """
+     if object is a lambada,return true else return false
+    :param object: python object
+    :return:
+    """
+    return isinstance(object, inspect.types.LambdaType)
 
 
 # weakref.WeakMethod backport
 try:
+    # Use WeakMethod
     from weakref import WeakMethod
-
 except ImportError:
     import types
+
 
     class WeakMethod(object):
         """Light WeakMethod backport compiled from various sources. Tested in 2.7"""
@@ -59,7 +69,6 @@ except ImportError:
         def __eq__(self, other):
             try:
                 return type(self) is type(other) and self() == other()
-
             except Exception:
                 return False
 
@@ -77,7 +86,7 @@ class Signal(object):
         self._block = False
         self._sender = None
         self._slots = []
-        
+
     def __call__(self, *args, **kwargs):
         self.emit(*args, **kwargs)
 
@@ -103,7 +112,6 @@ class Signal(object):
         # Get the sender
         try:
             self._sender = WeakMethod(_get_sender())
-
         # Account for when func_name is at '<module>'
         except AttributeError:
             self._sender = None
@@ -136,11 +144,12 @@ class Signal(object):
         """
         Connects the signal to any callable object
         """
+        # slot must be an callable object
         if not callable(slot):
             raise ValueError("Connection to non-callable '%s' object failed" % slot.__class__.__name__)
 
-        if isinstance(slot, (partial, Signal)) or '<' in slot.__name__:
-            # If it's a partial, a Signal or a lambda. The '<' check is the only py2 and py3 compatible way I could find
+        if isinstance(slot, (partial, Signal)) or is_lambada(slot):
+            # If it's a partial, a Signal or a lambda.  add it to slots
             if slot not in self._slots:
                 self._slots.append(slot)
         elif inspect.ismethod(slot):
