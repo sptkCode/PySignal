@@ -1,6 +1,6 @@
 __author__ = "Dhruv Govil"
 __copyright__ = "Copyright 2016, Dhruv Govil"
-__credits__ = ["Dhruv Govil", "John Hood", "Jason Viloria", "Adric Worley", "Alex Widener",'sptk']
+__credits__ = ["Dhruv Govil", "John Hood", "Jason Viloria", "Adric Worley", "Alex Widener", 'sptk']
 __license__ = "MIT"
 __version__ = "1.1.4"
 __maintainer__ = "Dhruv Govil"
@@ -20,7 +20,12 @@ def is_lambada(object):
     :param object: python object
     :return:
     """
-    return isinstance(object, inspect.types.LambdaType)
+    try:
+        if object.func_name == (lambda: None).func_name:
+            return True
+    except Exception:
+        pass
+    return False
 
 
 # weakref.WeakMethod backport
@@ -181,7 +186,7 @@ class Signal(object):
                         (s[slotSelf] is slot.__func__)):
                     self._slots.remove(s)
                     break
-        elif isinstance(slot, (partial, Signal)) or '<' in slot.__name__:
+        elif isinstance(slot, (partial, Signal)) or is_lambada(slot):
             # If it's a partial, a Signal or lambda, try to remove directly
             try:
                 self._slots.remove(slot)
