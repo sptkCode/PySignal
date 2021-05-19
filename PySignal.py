@@ -1,6 +1,6 @@
 __author__ = "Dhruv Govil"
 __copyright__ = "Copyright 2016, Dhruv Govil"
-__credits__ = ["Dhruv Govil", "John Hood", "Jason Viloria", "Adric Worley", "Alex Widener"]
+__credits__ = ["Dhruv Govil", "John Hood", "Jason Viloria", "Adric Worley", "Alex Widener",'sptk']
 __license__ = "MIT"
 __version__ = "1.1.4"
 __maintainer__ = "Dhruv Govil"
@@ -11,7 +11,7 @@ import inspect
 import sys
 import weakref
 from functools import partial
-from pyparsing import basestring
+from six import string_types
 
 
 def is_lambada(object):
@@ -279,13 +279,9 @@ class SignalFactory(dict):
         :param isBlocked: the state to set the signal to
         """
         if signals:
-            try:
-                if isinstance(signals, basestring):
-                    signals = [signals]
-            except NameError:
-                if isinstance(signals, str):
-                    signals = [signals]
-
+            # fix basestring to six.string_types
+            if isinstance(signals, string_types):
+                signals = [signals]
         signals = signals or self.keys()
 
         for signal in signals:
