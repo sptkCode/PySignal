@@ -527,9 +527,18 @@ class FunTest(unittest.TestCase):
         self.assertTrue(PySignal.is_lambada(lambda x: x ** x))
 
     def test_not_lambada(self):
+        """
+        test other type is lambda
+        :return:
+        """
         def fun():
             pass
         self.assertFalse(PySignal.is_lambada(fun))
+        self.assertFalse(PySignal.is_lambada(self))
+        self.assertFalse(PySignal.is_lambada(10))
+        self.assertFalse(PySignal.is_lambada({}))
+        self.assertFalse(PySignal.is_lambada([]))
+        self.assertFalse(PySignal.is_lambada(partial(int,2)))
 
 
 if __name__ == '__main__':
