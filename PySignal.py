@@ -21,7 +21,7 @@ def is_lambada(object):
     :return:
     """
     try:
-        if object.func_name == (lambda: None).func_name:
+        if object.__name__ == (lambda: None).__name__:
             return True
     except Exception:
         pass

@@ -206,9 +206,11 @@ class SignalTest(unittest.TestCase, SignalTestMixin):
 
     def test_EmitToDeletedFunction(self):
         """Test emitting signal to deleted instance method"""
+
         def ToDelete(test, value):
             test.checkVal = value
             test.func_call_count += 1
+
         funcSignal = PySignal.Signal()
         funcSignal.connect(ToDelete)
         del ToDelete
@@ -518,6 +520,16 @@ class ClassSignalFactoryTest(unittest.TestCase, SignalTestMixin):
             dummy.signalFactory.deregister('Spam')
         except KeyError:
             self.fail("Deregistering invalid channel should not raise KeyError")
+
+
+class FunTest(unittest.TestCase):
+    def test_is_lambada(self):
+        self.assertTrue(PySignal.is_lambada(lambda x: x ** x))
+
+    def test_not_lambada(self):
+        def fun():
+            pass
+        self.assertFalse(PySignal.is_lambada(fun))
 
 
 if __name__ == '__main__':
